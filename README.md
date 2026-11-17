@@ -46,7 +46,18 @@
 
 ## 安装与使用
 
-完整步骤见 **[中文安装说明](docs/INSTALL.md)**。这是已验证环境的复现记录；整理后的安装流程未在第二台手机上执行完整重装，不是通用的一键安装器。
+电脑辅助安装见 **[中文安装说明](docs/INSTALL.md)**；不使用电脑见 **[Termux 手机端安装](docs/PHONE_ONLY.md)**。原有环境已实机验证，新增手机安装入口尚未在全新手机上完成端到端验证，不能保证所有机型兼容。
+
+纯手机安装：先在普通 Termux 中安装 `git`、`curl`、`coreutils`，然后执行（手机须已有 root）：
+
+```sh
+git clone https://github.com/Ayc-Gh/deepseek-harness-android.git
+cd deepseek-harness-android
+bash install-phone.sh
+bash phone.sh open
+```
+
+Termux 获取方式、root 授权、失败处理和日常启停见上述手机端文档。已部署的手机不必再次安装，直接使用 `bash phone.sh start` / `status` / `open` / `stop`。
 
 已安装完成后，在手机 root shell 执行：
 
@@ -67,7 +78,7 @@ Windows 上安装 [Android SDK Platform-Tools](https://developer.android.com/too
 
 默认自动选择唯一一台处于 `device` 状态的手机；也可以指定 `-Serial <设备序列号>`、`-Adb <adb.exe完整路径>`。`open` 需要手机解锁，使用 Chrome；它处理本次实测出现的外部 Intent 跳转后 HTTP 401 问题，随后在地址栏直接进入主页，不修改服务端认证。
 
-为保持与实测环境一致，脚本保留路径 `/data/local/dsh-verify-20261117-a1` 和所有者标记。若要改目录，需同步修改 `scripts/enter-chroot.sh`、`scripts/service.sh`、`harness.ps1` 和安装步骤；不要直接覆盖已有安装。
+为保持与实测环境一致，脚本保留路径 `/data/local/dsh-verify-20261117-a1` 和所有者标记。当前入口不支持自定义目录；不要只修改一个脚本中的路径，也不要直接覆盖已有安装。
 
 ## 文件结构
 
@@ -76,7 +87,10 @@ scripts/                 手机启动、降权、安装脚本
 tests/native-smoke.cjs    8 项原生依赖与功能检查
 results/                 脱敏验收结果、官方 npm 包元数据
 harness.ps1              Windows ADB 启停与打开页面
+install-phone.sh         普通 Termux 下载与安装入口（要求已有 root）
+phone.sh                 手机端启停与打开页面
 docs/INSTALL.md          官方下载来源、校验、部署步骤、故障处理
+docs/PHONE_ONLY.md       不使用电脑的安装和日常使用
 ```
 
 本仓库自有脚本和文档采用 [MIT License](LICENSE)。DeepSeek Harness、Ubuntu、Node.js 及第三方依赖分别遵循各自许可证，本仓库不重新分发其二进制或模型权重。

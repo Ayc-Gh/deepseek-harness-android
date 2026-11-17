@@ -1,0 +1,24 @@
+{
+  "checkedDate": "2026-11-17",
+  "scope": "New phone-only entry points checked against the existing deployment without reinstalling it",
+  "checks": {
+    "bashSyntax": "passed",
+    "androidShellSyntax": "passed",
+    "downloadConstantsMatchOfficialDownloadRecord": "passed",
+    "existingDirectoryPreflightRejectionExit": 17,
+    "existingDirectoryInstallationRejectionExit": 17,
+    "existingServicePidUnchanged": true,
+    "existingInstallationDirectoryMetadataUnchanged": true,
+    "phoneHelperStatusAgainstExistingService": "passed",
+    "invalidPhoneActionRejectionExit": 2,
+    "rootDownloaderInvocationRejectionExit": 2,
+    "launchUrlParserWithSyntheticInput": "passed",
+    "hostNamespaceVerificationMounts": 0
+  },
+  "notVerified": [
+    "Complete fresh installation in the Termux application on another phone",
+    "The non-root Termux to su transition on another root implementation",
+    "Browser UI control through the new phone-only wrapper",
+    "Long-duration background operation after starting from Termux"
+  ]
+}
