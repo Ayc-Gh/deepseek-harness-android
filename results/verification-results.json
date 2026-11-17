@@ -1,0 +1,90 @@
+{
+  "verifiedDate": "2026-11-17",
+  "result": "Core phone deployment and functional verification passed with sandbox limitations",
+  "officialReference": "https://github.com/deepseek-ai/deepseek-harness",
+  "device": {
+    "model": "OPPO PHY110",
+    "soc": "SM8650",
+    "android": 17,
+    "api": 37,
+    "arch": "arm64",
+    "kernel": "6.1.157",
+    "pageSizeBytes": 4096
+  },
+  "installation": {
+    "phoneBase": "/data/local/dsh-verify-20261117-a1",
+    "linux": "Ubuntu Base 24.04.5 arm64",
+    "node": "v24.22.3",
+    "package": "@deepseek-ai/dsh@0.2.2-rc.1",
+    "method": "Official npm package in a private mount namespace and chroot; upstream package not patched",
+    "listener": "127.0.0.1:3080",
+    "modelExecution": "DeepSeek API; Harness and command tools execute on the phone"
+  },
+  "checks": {
+    "nativeSmoke": {
+      "passed": 8,
+      "total": 8,
+      "evidence": "native-smoke-results.json"
+    },
+    "realModelTask": {
+      "passed": true,
+      "uid": 2000,
+      "pythonResult": 42,
+      "fileContent": "DSH_PHONE_AGENT_OK",
+      "fileBytes": 18,
+      "fileSha256": "6017c337f5860c091a7bd57156133b452ccb72b4fc58b2e728a1c6e5636cfa75"
+    },
+    "rebootThenManualStart": true,
+    "gracefulServiceRestart": true,
+    "sessionAndModelConfigurationPersistence": true,
+    "screenOff": {
+      "seconds": 60,
+      "processStayedAlive": true,
+      "unauthenticatedHttpStatus": 401,
+      "androidState": "Dozing"
+    },
+    "phoneChromeUi": {
+      "passed": true,
+      "existingVerificationSessionVisible": true,
+      "directNavigationHttpStatus": 200
+    },
+    "hostNamespaceVerificationMounts": 0,
+    "previousBlockedMountTasksRemaining": 0,
+    "lastObservedRssKiB": 359880
+  },
+  "permissions": {
+    "uid": 2000,
+    "gid": 2000,
+    "supplementaryGroups": [
+      3003
+    ],
+    "effectiveCapabilities": "0",
+    "boundingCapabilities": "0",
+    "noNewPrivileges": true,
+    "androidUidSharedWithShell": true,
+    "landlockAvailable": false,
+    "verifiedSessionSandboxMode": "danger-full-access",
+    "verifiedSessionApprovalMode": "never"
+  },
+  "resolvedIssues": [
+    "Initial Android toybox mount incompatibility caused blocked mount tasks. Approved reboot cleared them. Launcher now uses Ubuntu util-linux mount, verifies private propagation, and leaves zero verification mounts in the host namespace.",
+    "On this phone, Chrome external-intent navigation repeatedly landed on HTTP 401. Direct address-bar navigation succeeded. The open helper now performs this navigation after the launch-token exchange without changing server authentication."
+  ],
+  "limitations": [
+    "The phone kernel does not provide usable Landlock; default workspace-write command sandbox fails closed. Tested commands ran with the Harness full-access mode under UID 2000 and dropped Linux capabilities. This is not a complete security sandbox.",
+    "Boot autostart is not configured; start the service manually after reboot.",
+    "USB unplugged operation and long-duration standby were not tested.",
+    "The open helper requires the phone to be unlocked and uses the installed Chrome browser."
+  ],
+  "controls": {
+    "pcScript": "harness.ps1",
+    "actions": [
+      "start",
+      "stop",
+      "status",
+      "open"
+    ],
+    "phoneRootStart": "/data/local/dsh-verify-20261117-a1/scripts/service.sh start",
+    "phoneBrowser": "http://127.0.0.1:3080/"
+  }
+}

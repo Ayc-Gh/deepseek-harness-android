@@ -1,0 +1,50 @@
+[
+  {
+    "name": "ordinary-user-and-capabilities",
+    "pass": true,
+    "detail": {
+      "uid": 2000,
+      "platform": "linux",
+      "arch": "arm64"
+    }
+  },
+  {
+    "name": "filesystem-hardlink-rename",
+    "pass": true,
+    "detail": "write/read/link/rename passed"
+  },
+  {
+    "name": "bash-git-python",
+    "pass": true,
+    "detail": "BASH_OKgit version 2.43.0\nPython 3.12.3\n"
+  },
+  {
+    "name": "sharp-native-image",
+    "pass": true,
+    "detail": {
+      "width": 16,
+      "height": 16,
+      "format": "png"
+    }
+  },
+  {
+    "name": "koffi-libc",
+    "pass": true,
+    "detail": "libc FFI passed"
+  },
+  {
+    "name": "ripgrep-native-search",
+    "pass": true,
+    "detail": "bundled ARM64 ripgrep passed"
+  },
+  {
+    "name": "node-pty-terminal",
+    "pass": true,
+    "detail": "PTY_OK2000"
+  },
+  {
+    "name": "session-native-flock",
+    "pass": true,
+    "detail": "native advisory lock passed"
+  }
+]

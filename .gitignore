@@ -1,0 +1,20 @@
+# Runtime, credentials, downloads and device data do not belong in this repository.
+.downloads/
+downloads/
+rootfs/
+node_modules/
+.dsh/
+.env
+.env.*
+*.log
+*.pid
+*.cookies
+*.pem
+*.key
+*.tar.gz
+*.tar.xz
+*.zip
+*.png
+*.jpg
+*.xml
+local.*
