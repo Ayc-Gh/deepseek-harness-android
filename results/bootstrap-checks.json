@@ -1,0 +1,37 @@
+{
+  "checkedDate": "2026-11-17",
+  "entryPoint": "install.sh",
+  "testSuite": "tests/test_bootstrap.py",
+  "executionEnvironment": "Non-root UID 2000 inside the existing phone Ubuntu environment, with isolated temporary PATH and simulated Termux package manager, Git, curl, su and downstream installation",
+  "testsPassed": 16,
+  "testsFailed": 0,
+  "coveredScenarios": [
+    "Fresh simulated environment without Git or curl",
+    "Documented one-command launcher without curl",
+    "Failed launcher download is never executed",
+    "Denied root authorization stops before package management",
+    "Unsupported architecture stops before requesting root",
+    "Package upgrade failure prevents cloning and installation",
+    "Download-tool recovery failure stops the workflow",
+    "Failed clone is never executed",
+    "Unrelated existing directory is preserved",
+    "Dirty repository is preserved without fetching or overwriting",
+    "Clean managed repository only fast-forwards; --no-open is honored",
+    "Local commits are not reset",
+    "Existing phone installation returns 17 without reopening or reinstalling",
+    "Downstream installation failure does not open the browser",
+    "Browser launch failure preserves successful installation status",
+    "Non-Termux environment is rejected"
+  ],
+  "additionalDeviceChecks": {
+    "bashSyntax": "passed",
+    "rootInvocationRejectedBeforePackageManagement": true,
+    "existingServicePidUnchanged": true,
+    "hostNamespaceVerificationMounts": 0
+  },
+  "notVerified": [
+    "Actual package installation or upgrade inside a freshly installed Termux app",
+    "Complete fresh deployment on another phone",
+    "Long-duration background operation started from Termux"
+  ]
+}

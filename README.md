@@ -48,16 +48,14 @@
 
 电脑辅助安装见 **[中文安装说明](docs/INSTALL.md)**；不使用电脑见 **[Termux 手机端安装](docs/PHONE_ONLY.md)**。原有环境已实机验证，新增手机安装入口尚未在全新手机上完成端到端验证，不能保证所有机型兼容。
 
-纯手机安装：先在普通 Termux 中安装 `git`、`curl`、`coreutils`，然后执行（手机须已有 root）：
+**Termux 刚装好也可以直接安装：**等待首次初始化完成，在普通 Termux 提示符粘贴整条命令（手机须已有 root）：
 
-```sh
-git clone https://github.com/Ayc-Gh/deepseek-harness-android.git
-cd deepseek-harness-android
-bash install-phone.sh
-bash phone.sh open
+<!-- one-click-command -->
+```bash
+bash -c 'set -e; (( EUID != 0 )) || { echo "请在普通 Termux 中运行"; exit 1; }; test -n "${PREFIX:-}" && test -x "$PREFIX/bin/apt-get" && test -x "$PREFIX/bin/pkg" || { echo "请先完成 Termux 首次初始化"; exit 1; }; export DEBIAN_FRONTEND=noninteractive; command -v curl >/dev/null || { apt-get update; apt-get install -y -o Dpkg::Options::=--force-confold curl ca-certificates; }; curl --fail --location --proto =https --proto-redir =https --retry 3 https://raw.githubusercontent.com/Ayc-Gh/deepseek-harness-android/main/install.sh -o "$PREFIX/tmp/dsh-install.sh"; bash "$PREFIX/tmp/dsh-install.sh"'
 ```
 
-Termux 获取方式、root 授权、失败处理和日常启停见上述手机端文档。已部署的手机不必再次安装，直接使用 `bash phone.sh start` / `status` / `open` / `stop`。
+[独立一键安装脚本 install.sh](install.sh) 会自动准备依赖、获取项目、调用安装器并尝试打开 Chrome。它会更新 Termux 软件包，保留已有配置，不需要预装 Git；下载器缺失时也有 APT 引导步骤。Termux 获取方式、root 授权、失败处理和日常启停见上述手机端文档。已部署的手机不必再次安装，直接在仓库目录使用 `bash phone.sh start` / `status` / `open` / `stop`。
 
 已安装完成后，在手机 root shell 执行：
 
@@ -88,6 +86,7 @@ tests/native-smoke.cjs    8 项原生依赖与功能检查
 results/                 脱敏验收结果、官方 npm 包元数据
 harness.ps1              Windows ADB 启停与打开页面
 install-phone.sh         普通 Termux 下载与安装入口（要求已有 root）
+install.sh               刚初始化的 Termux 一键入口，自动准备依赖和项目
 phone.sh                 手机端启停与打开页面
 docs/INSTALL.md          官方下载来源、校验、部署步骤、故障处理
 docs/PHONE_ONLY.md       不使用电脑的安装和日常使用

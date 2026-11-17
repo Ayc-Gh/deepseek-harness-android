@@ -4,6 +4,8 @@
 
 **验证范围：**原有 ADB 部署和 Harness 功能已经实机验证。新增手机入口完成了语法、已有安装保护、固定下载值一致性和现有服务状态查询检查；尚未在全新手机的 Termux 中执行完整安装，也没有验证 Termux 启动后的长期后台表现。预检查通过不等于全部兼容性通过。
 
+独立一键入口 `install.sh` 另通过了 16 项隔离模拟测试及实机 root 误用拒绝检查，详见 [bootstrap-checks.json](../results/bootstrap-checks.json)。模拟测试没有真的安装或升级 Termux 软件包。
+
 ## 前提
 
 - 手机已有 root，能给 Termux 授予 `su` 权限。
@@ -13,7 +15,26 @@
 
 没有 root 的手机不能使用这套安装器。Termux 原生使用 Android 的 bionic，本方案通过 root chroot 提供 Ubuntu/glibc 用户空间；这里没有验证 proot 替代方案。[Termux 官方环境说明](https://github.com/termux/termux-packages/wiki/Termux-execution-environment)
 
-## 安装
+## Termux 刚安装好：一条命令安装
+
+先安装官方 Termux，第一次打开后等待初始化完成、出现终端提示符。然后在普通 Termux 中粘贴下面整条命令，不用先安装 Git、手动选择项目目录或输入 `su`。仍然需要手机预先 root；root 授权弹窗和 API Key 输入需要自己完成。
+
+<!-- one-click-command -->
+```bash
+bash -c 'set -e; (( EUID != 0 )) || { echo "请在普通 Termux 中运行"; exit 1; }; test -n "${PREFIX:-}" && test -x "$PREFIX/bin/apt-get" && test -x "$PREFIX/bin/pkg" || { echo "请先完成 Termux 首次初始化"; exit 1; }; export DEBIAN_FRONTEND=noninteractive; command -v curl >/dev/null || { apt-get update; apt-get install -y -o Dpkg::Options::=--force-confold curl ca-certificates; }; curl --fail --location --proto =https --proto-redir =https --retry 3 https://raw.githubusercontent.com/Ayc-Gh/deepseek-harness-android/main/install.sh -o "$PREFIX/tmp/dsh-install.sh"; bash "$PREFIX/tmp/dsh-install.sh"'
+```
+
+独立入口文件：[install.sh](../install.sh)。上面的启动命令会在 curl 缺失时先通过 APT 补齐下载工具；仅在脚本下载成功后执行，不把下载流直接交给 shell 执行。
+
+`install.sh` 自动检查普通 Termux / ARM64 / root，更新 Termux 软件包并保留已有配置，安装 Git、curl、coreutils、CA 证书，再获取项目，调用原来的手机安装器，完成后尝试打开 Chrome。只安装、不自动打开浏览器时，可以对已下载的文件执行 `bash "$PREFIX/tmp/dsh-install.sh" --no-open`。
+
+安装脚本不会申请共享存储权限、修改 root 管理器设置、关闭 SELinux或配置开机自启。无需 Termux:API 插件。脚本只适用于官方 Termux 的 APT 环境；不要在 `su` 提示符或 proot 容器里运行。
+
+重复运行时，已有 Git 项目必须来源匹配、位于 main 分支且没有未提交文件/本地分叉，才会快进更新；其他目录和修改保持不变。已有手机安装目录仍会被下层安装器拒绝覆盖，退出码为 17，随后显示管理已有安装的方法。网络/包管理器/克隆/校验失败时停止，不继续执行部分下载的项目。
+
+自动化回归测试见 [tests/test_bootstrap.py](../tests/test_bootstrap.py)：通过隔离 PATH 和模拟包管理器、Git、su 验证依赖缺失与失败分支，不会在测试中真的安装系统包。这些测试不等于在全新 Termux 应用或其他手机上完成端到端安装。
+
+## 手动分步安装
 
 从 [Termux 官方安装说明](https://github.com/termux/termux-app#installation) 选择官方 GitHub Releases 或 F-Droid 来源安装 Termux。打开 Termux，下面的命令都在**普通 Termux 提示符**执行，不要先进入 `su`：
 
@@ -81,6 +102,7 @@ bash phone.sh stop
 ## 脚本入口
 
 - `install-phone.sh`：普通 Termux 中运行，检查、下载、请求 root 安装。
+- `install.sh`：从刚完成初始化的 Termux 开始，自动准备包管理器、依赖和项目，然后调用 `install-phone.sh`。
 - `scripts/install-rootfs.sh`：内部 root 阶段入口，不应直接作为普通 Termux 安装命令运行。
 - `scripts/assets.sh`：固定的官方下载 URL、文件名、SHA256，与 `results/official-downloads.json` 对应。
 - `phone.sh`：请求 root 后执行启停、状态检查或打开浏览器。
